@@ -1,5 +1,7 @@
 // Recommendation Widget declaration
 import { useState } from "react";
+import { trackPDPViewEvent } from "@sitecore-discover/react";
+import { Container } from "@material-ui/core";
 
 const RfkRecommendation = ({
 	loading,
@@ -17,15 +19,16 @@ const RfkRecommendation = ({
 			setIndex(index-1);
 		}
     	onNavigationPrev({ index });
+		trackPDPViewEvent('831847072')
 	};
-
-	const onNextClick = () => {
+	const onNextClick = (sku) => {
 		if ( index === products.length-1 ){
 			setIndex(0);
 		} else {
 			setIndex(index+1);
 		}
 		onNavigationNext({ index });
+		trackPDPViewEvent(sku ?? '831828850')
 	};
 	const [index, setIndex] = useState(0);
 	const styleObject = {
@@ -33,21 +36,28 @@ const RfkRecommendation = ({
 		align : "center"
 	}
 	return (
-        <div>
-		{ !loading && products.length ?  ( <div><h1>{products[index].name}</h1>
-					<button onClick={onPrevClick}>Prev</button>
-					<div style={styleObject}>
-						<img width={200} src={products[index].image_url} />
-						{products[index].name}
-						<br />
-						<b>Product #: {index+1}</b>
-						<br />{products[index].image_url}
-					</div>
-					<button onClick={onNextClick}>Next</button></div>
-			) : ( <div> Loading ... </div > )
-		}
-		</div>
-	)
+    <Container>
+      {!loading && products.length ? (
+        <div><h1> Products For You</h1>
+			{products.map(product => (
+				<div>
+			  <h4>{product.name}</h4>
+			  <div style={styleObject}>
+				<img width={200} src={product.image_url} />
+				{product.sku}
+				<br />
+				<b>Price: {product.price}</b>
+				<br />
+				<button onClick={() => onProductClick(product.sku)}> create pdp view event</button>
+			  </div>
+			  </div>
+			))}
+        </div>
+      ) : (
+        <div> Loading ... </div>
+      )}
+    </Container>
+  );
 };
 
 export default RfkRecommendation;
