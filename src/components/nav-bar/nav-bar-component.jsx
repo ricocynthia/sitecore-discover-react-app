@@ -1,6 +1,6 @@
 import { Toolbar, Typography, Button, AppBar, InputBase, Menu, MenuItem } from "@material-ui/core";
 import { alpha, makeStyles } from "@material-ui/core/styles";
-import { setWidget, WidgetDataType } from "@sitecore-discover/react";
+import { setWidget, WidgetDataType, Widget } from "@sitecore-discover/react";
 import * as React from 'react';
 import RfkHeroMessage from "../../rfk-widget-components/html-blocks/hero-message-component";
 import ScLogo from '../../assets/sc-logo_white.png';
@@ -122,9 +122,8 @@ const NavBar = (props) => {
               onMouseLeave={onMouseDown}
             />
           </div>
-          <Button color="inherit">Login</Button>
           </Toolbar>
-          {/* <Widget rfkId="crm-html-block-widget" /> */}
+          <Widget rfkId="crm-html-block-widget" />
         </AppBar>
       <Toolbar />
     </React.Fragment>

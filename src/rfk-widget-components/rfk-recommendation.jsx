@@ -1,13 +1,13 @@
 // Recommendation Widget declaration
 import { useState } from "react";
 import { trackPDPViewEvent } from "@sitecore-discover/react";
-import { Container } from "@material-ui/core";
+import { Container, Grid, Paper } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 
 const RfkRecommendation = ({
 	loading,
 	title,
 	products = [],
-	dispatch,
 	onNavigationNext,
 	onNavigationPrev,
 	onProductClick
@@ -35,23 +35,36 @@ const RfkRecommendation = ({
 		width : 200, 
 		align : "center"
 	}
+	const paperStyles = {
+		height: 400,
+		width: 300
+	}
 	return (
     <Container>
       {!loading && products.length ? (
-        <div><h1> Products For You</h1>
-			{products.map(product => (
-				<div>
-			  <h4>{product.name}</h4>
-			  <div style={styleObject}>
-				<img width={200} src={product.image_url} />
-				{product.sku}
-				<br />
-				<b>Price: {product.price}</b>
-				<br />
-				<button onClick={() => onProductClick(product.sku)}> create pdp view event</button>
-			  </div>
-			  </div>
-			))}
+        <div>
+			<h1> Products For You</h1>
+			<Grid container spacing={2}>
+				<Grid item xs={12}>
+					<Grid container justifyContent="center" spacing={3}>
+						{products.map(product => (
+							<Grid key={product.sku} item>
+								<Paper style={paperStyles}>
+									<h4>{product.name}</h4>
+									<div style={styleObject}>
+										<img width={200} src={product.image_url} />
+										{product.sku}
+										<br />
+										<b>Price: {product.price}</b>
+										<br />
+										<button onClick={() => onProductClick(product.sku)}> create pdp view event</button>
+									</div>
+								</Paper>
+							</Grid>
+						))}
+					</Grid>
+				</Grid>
+			</Grid>			
         </div>
       ) : (
         <div> Loading ... </div>
