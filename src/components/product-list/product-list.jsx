@@ -29,18 +29,18 @@ const ProductItem = ({
       price,
       image_url
     } = product;
-    return <div class="rfksdk_product rfk_sp_product">
-      <div class="rfksdk_product__wrapper">
+    return <div>
+      <div>
         <a href={url} onClick={onClick}
-          ><img class="rfksdk_product__image" src={image_url} alt={name}
+          ><img src={image_url} alt={name}
         /></a>
       </div>
-      <div class="rfksdk_product__info">
+      <div >
         <a href={url}>
           {includeSku
-            ? <div class="rfksdk_product__sku">{sku}</div>
+            ? <div>{sku}</div>
             : null}
-          <div class="rfksdk_product__name">{name}</div>
+          <div>{name}</div>
         </a>
         <Price
           className="rfksdk_product__price"
@@ -62,10 +62,9 @@ const ProductList = ({ products = [], onProductClick, onDiscoverStyleOpen, loade
     {!ready ? `...loading` : null}
     {ready &&
     products.map(
-      (product) => <li class="rfk_product">
+      (product) => <li key={product.sku}>
         <ProductItem
           {...product}
-          key={product.sku}
           onClick={onProductClick}
         />
       </li>,

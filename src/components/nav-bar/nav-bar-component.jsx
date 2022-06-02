@@ -4,7 +4,7 @@ import { setWidget, WidgetDataType, Widget } from "@sitecore-discover/react";
 import * as React from 'react';
 import RfkHeroMessage from "../../rfk-widget-components/html-blocks/hero-message-component";
 import ScLogo from '../../assets/sc-logo_white.png';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -76,7 +76,7 @@ const rfkHeroMsgConfig = {
 }
 setWidget('crm-html-block-widget', rfkHeroMsgConfig);
 
-const NavBar = (props) => {
+const NavBar = (props) => {  
   const navigate = useNavigate();
   const classes = useStyles();
   const onMouseDown = () => {
@@ -92,24 +92,21 @@ const NavBar = (props) => {
           </Typography>
           <MenuItem onClick={() => navigate('/')}>
 
-          <Typography textAlign="center">Home</Typography>
+          <Typography textalign="center">Home</Typography>
 </MenuItem>
 
 <MenuItem onClick={() => navigate('/products/female')}>
-  <Typography textAlign="center">Female Products</Typography>
+  <Typography textalign="center">Female Products</Typography>
   </MenuItem>
           
                 <MenuItem onClick={() => navigate('/products/male')}>
-          <Typography textAlign="center">Male Products</Typography>
+          <Typography textalign="center">Male Products</Typography>
                 </MenuItem>
 
                 <MenuItem onClick={() => navigate('/products/unisex')}>
-          <Typography textAlign="center">Unisex Products</Typography>
+          <Typography textalign="center">Unisex Products</Typography>
                 </MenuItem>
           <div className={classes.search}>
-            {/* <div className={classes.searchIcon}>
-              <SearchIcon />
-            </div> */}
             <InputBase
               placeholder="Search…"
               classes={{

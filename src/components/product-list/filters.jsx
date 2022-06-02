@@ -18,17 +18,19 @@ const PLPFilters = ({
     <div className="rfk_sp_controls__control">
       <label>Number of products:</label>
       <select onChange={({ target }) => onPerPageChange(target.value)}>
-        <option selected={productsPage === 12} value="12">12</option>
-        <option selected={productsPage === 24} value="24">24</option>
-        <option selected={productsPage === 36} value="36">36</option>
+        <option value={productsPage === 12}>12</option>
+        <option value={productsPage === 24} >24</option>
+        <option value={productsPage === 36} >36</option>
       </select>
     </div>
 
-    <div className="rfk_sp_controls__control">
+    <div>
       <label>#Page:</label>
-      <select onChange={({ target }) => onPageNumberChange({page: Number(target.value)})}>
-        ${Array.from({ length: totalPages }, (_, i) => i + 1).map(
-          (p) => <option selected={page === p} value={p}>{p}</option>
+      <select onChange={({ target }) => {
+        console.log(target.value)
+        onPageNumberChange(Number(target.value))}}>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+          (p) => <option key={p} value={p}>{p}</option>
         )}
       </select>
     </div>
@@ -43,8 +45,9 @@ const PLPFilters = ({
       >
         ${sortChoices.map(
           ({ label, name, order }) => <option
-            selected={name === sortType && order === sortDirection}
-            value={{name}+'#'+{order}}
+          key={`${name}-${order}`}
+            value={name === sortType && order === sortDirection}
+            
           >
             {label}
           </option>

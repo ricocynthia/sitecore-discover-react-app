@@ -67,92 +67,66 @@ const onSearchChangeDebounced = useCallback(
 
   return (
     <Container>
-      {!loading && products.length ? 
-      (
-        // <div>
-        //   <h1> Products For You</h1>
-        //   {products.map((product) => (
-        //     <div>
-        //       <h4>{product.name}</h4>
-        //       <div style={styleObject}>
-        //         <img width={200} src={product.image_url} />
-        //         {product.sku}
-        //         <br />
-        //         <b>Price: {product.price}</b>
-        //         <br />
-        //         <button onClick={() => trackPDPViewEvent(product.sku)}>
-        //           create pdp view event
-        //         </button>
-        //       </div>
-        //     </div>
-        //     ))}
-        // </div>
+      {!loading && products.length ? (
         <div className="rfk-full-page-search">
-      {keyphrase
-        ? <div className="rfk_msg_prod">
-            Top Results for: «{keyphrase}»
+          {keyphrase ? (
+            <div className="rfk_msg_prod">Top Results for: «{keyphrase}»</div>
+          ) : null}
+          <div className="rfk_sp rfk-sp">
+            <FacetList
+              facets={facets}
+              onFacetClick={(payload) => {
+                dispatch(SearchResultsActions.FACET_CLICKED, payload);
+              }}
+              onClear={(payload) => {
+                dispatch(SearchResultsActions.CLEAR_FILTERS, payload);
+              }}
+            />
+            <div className="rfk_li" data-page={page}>
+              <PLPFilters
+                keyphrase={keyphrase}
+                productsPage={productsPerPage}
+                page={page}
+                sortType={sortType}
+                totalPages={totalPages}
+                sortDirection={sortDirection}
+                sortChoices={sortChoices}
+                onPerPageChange={(numProducts) => {
+                  dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
+                    numProducts: Number(numProducts),
+                  });
+                }}
+                onPageNumberChange={(page) => onPageNumberChange({page})}
+                onSortChange={(payload) => {
+                  dispatch(SearchResultsActions.SORT_CHANGED, payload);
+                }}
+                onSearchChange={onSearchChangeDebounced}
+              />
+              {!loading && totalPages > 0 ? (
+                <div className="rfk_sp_results_info">
+                  <span>
+                    Shown
+                    {page < totalPages ? page * productsPerPage : totalItems}
+                    products out of {totalItems};
+                  </span>
+                  <span>
+                    Page {page} of {totalPages}
+                  </span>
+                </div>
+              ) : null}
+              {totalItems === 0 ? "No results found" : null}
+              <ProductList
+                products={products}
+                loaded={loaded}
+                loading={loading}
+                onProductClick={(payload) => {
+                  dispatch(trackPDPViewEvent, payload);
+                }}
+              />
+            </div>
           </div>
-        : null}
-      <div className="rfk_sp rfk-sp">
-        <FacetList
-          facets={facets}
-          onFacetClick={(payload) => {
-            dispatch(SearchResultsActions.FACET_CLICKED, payload);
-          }}
-          onClear={(payload) => {
-            dispatch(SearchResultsActions.CLEAR_FILTERS, payload);
-          }}
-        />
-        <div className="rfk_li" data-page={page}>
-          <PLPFilters
-            keyphrase={keyphrase}
-            productsPage={productsPerPage}
-            page={page}
-            sortType={sortType}
-            totalPages={totalPages}
-            sortDirection={sortDirection}
-            sortChoices={sortChoices}
-            onPerPageChange={(numProducts) => {
-              dispatch(
-                SearchResultsActions.RESULTS_PER_PAGE_CHANGED,
-                {
-                  numProducts: Number(numProducts)
-                }
-              );
-            }}
-            onPageNumberChange={onPageNumberChange}
-            onSortChange={(payload) => {
-              dispatch(SearchResultsActions.SORT_CHANGED, payload);
-            }}
-            onSearchChange={onSearchChangeDebounced}
-          />
-          {!loading && totalPages > 0
-            ? <div className="rfk_sp_results_info">
-                <span
-                  >Shown
-                  {page < totalPages ? page * productsPerPage : totalItems}
-                  products out of {totalItems};</span
-                >
-                <span>Page {page} of {totalPages}</span>
-              </div>
-            : null}
-          {totalItems === 0 ? "No results found" : null}
-          <ProductList
-            products={products}
-            loaded={loaded}
-            loading={loading}
-            onProductClick={(payload) => {
-              dispatch(
-                trackPDPViewEvent,
-                payload
-              );
-            }}
-          />
         </div>
-      </div>
-    </div>
-      ) 
-      : (
+      ) : (
         <div> Loading ... </div>
       )}
     </Container>
