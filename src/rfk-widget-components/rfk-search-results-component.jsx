@@ -55,10 +55,6 @@ const RfkSearchResults = ({
       reset();
     }
   }, []);
-  const search = useLocation().search.split('=');
-  if (search.length > 1) {
-    keyphrase = search[1]
-  }
 
   const handlePageClick = (e) => {
     const page = e.selected + 1;
