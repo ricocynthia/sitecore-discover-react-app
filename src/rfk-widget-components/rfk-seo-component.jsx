@@ -1,5 +1,4 @@
-// Recommendation Widget declaration
-import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 
 const RfkSeoComponent = ({
     appearance,
@@ -14,8 +13,11 @@ const RfkSeoComponent = ({
     document.title = appearance?.variables?.title?.value ?? 'Back Up Title';
 	return (
         <div>
-		{ !loading ?  (<div>done loading seo
-        </div>) : ( <div> Loading ... </div > )
+		{ !loading ?  (
+            <Helmet>
+  <title>{appearance?.variables?.title?.value}</title>
+  <meta name='description' content={appearance?.variables?.description?.value} />
+</Helmet>) : ( <div> Loading ... </div > )
 		}
 		</div>
 	)

@@ -1,3 +1,6 @@
+import { Grid, Container, Paper } from "@material-ui/core";
+import { trackPDPViewEvent } from "@sitecore-discover/react";
+
 const Price = ({ max, min, price, finalPrice }) => {
     if (max) {
       return <div className="rfksdk_price">
@@ -17,8 +20,28 @@ const ProductItem = ({
     includeSku,
     className,
     onClick,
+    isPreviewSearch = false,
     ...product
   }) => {
+    const paperStyles = {
+      height: isPreviewSearch ? null : 400,
+      width: 300,
+    }
+    const styleObject = {
+      width : isPreviewSearch ? null : 200, 
+      align : "center"
+    }
+    let imgStyles = {
+      width: 200
+    }
+    if (isPreviewSearch) {
+      imgStyles = {
+        display: 'block',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        height: 150
+      }
+    }
     const {
       url,
       name,
@@ -29,47 +52,47 @@ const ProductItem = ({
       price,
       image_url
     } = product;
-    return <div>
-      <div>
-        <a href={url} onClick={onClick}
-          ><img src={image_url} alt={name}
-        /></a>
-      </div>
-      <div >
-        <a href={url}>
-          {includeSku
-            ? <div>{sku}</div>
-            : null}
-          <div>{name}</div>
-        </a>
-        <Price
-          className="rfksdk_product__price"
+    return <Grid key={sku} item>
+    <Paper style={paperStyles} elevation={0}>
+      <div style={styleObject}>
+        <img style={imgStyles} src={image_url} />
+        <h4>{name}</h4>
+        {!isPreviewSearch ? sku : null}
+        { !isPreviewSearch ? <Price
           price={price}
           finalPrice={final_price}
           min={final_price_min_formatted}
           max={final_price_max_formatted}
-        />
-        <a href={url} onClick={onClick} className="rfksdk_product__view-details"
-          >View</a
-        >
+          /> : null}
+          <button onClick={() => trackPDPViewEvent(product.sku)}> create pdp view event</button>
       </div>
-    </div>;
+    </Paper>
+  </Grid>
   };
 
-const ProductList = ({ products = [], onProductClick, onDiscoverStyleOpen, loaded, loading }) => {
+const ProductList = ({ 
+  products = [], onProductClick, onDiscoverStyleOpen, loaded, loading,
+  isPreviewSearch = false
+ }) => {
   const ready = loaded && !loading;
-  return <ul className="rfk_products" style={{width: '100%'}}>
-    {!ready ? `...loading` : null}
-    {ready &&
-    products.map(
-      (product) => <li key={product.sku}>
-        <ProductItem
-          {...product}
-          onClick={onProductClick}
-        />
-      </li>,
-    )}
-  </ul>;
+  return (<Container>
+      {!ready ? <div> Loading...</div>
+      : ready && products.length > 0 
+        ? <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Grid container justifyContent="center" spacing={3}>
+            {products.map(product => <ProductItem 
+            key={product.sku} 
+            {...product} 
+            onClick={onProductClick} 
+            isPreviewSearch={isPreviewSearch}
+            />)}
+          </Grid>
+          </Grid>
+        </Grid>	
+        : <div> No products available</div>}
+    </Container>
+  )
 };
 
 export default ProductList;

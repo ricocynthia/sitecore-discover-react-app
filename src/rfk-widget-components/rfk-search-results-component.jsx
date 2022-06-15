@@ -1,27 +1,21 @@
-import { PageController, SearchResultsWidget, trackPDPViewEvent } from "@sitecore-discover/react";
-import { Container } from "@material-ui/core";
-import FacetList from "../components/product-list/facet-list-component";
-import ProductList from "../components/product-list/product-list";
-import PLPFilters from "../components/product-list/filters";
-import { useCallback } from "react";
+import { Container, Grid } from "@material-ui/core";
+import { setWidget, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
 import { SearchResultsActions } from "@sitecore-discover/widgets";
+import classnames from 'classnames';
+import { useEffect } from "react";
+import ReactPaginate from 'react-paginate';
+import { useLocation } from "react-router-dom";
+import FacetList from "../components/product-list/facet-list-component";
+import PLPFilters from "../components/product-list/filters";
+import ProductList from "../components/product-list/product-list";
+import RfkSeoComponent from "./rfk-seo-component";
+import './styles/rfk-search-results.component.css';
 
-const debounce = (func, wait, immediate) => {
-  let timeout;
-  return function returnFn(...rest) {
-    const context = this;
-    const args = rest;
-    const later = function executeFn() {
-      timeout = null;
-      if (!immediate) func.apply(context, args);
-    };
-    const callNow = immediate && !timeout;
-    clearTimeout(timeout);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
+const rfkPLPSeoConfig = {
+  type: WidgetDataType.SEO,
+  component: RfkSeoComponent
 }
-
+setWidget('crm-plp-seo', rfkPLPSeoConfig);
 // ACTION PROPS:
 // onClearFilters
 // onFacetClick
@@ -30,10 +24,9 @@ const debounce = (func, wait, immediate) => {
 // onResultsPerPageChange
 // onSortChange
 const RfkSearchResults = ({
-  error,
   loaded,
   loading,
-  page,
+  page = 1,
   keyphrase,
   productsPerPage = 10,
   totalPages,
@@ -50,85 +43,101 @@ const RfkSearchResults = ({
   onResultsPerPageChange,
   onSortChange
 }) => {
-  const styleObject = {
-    width : 200, 
-    align : "center"
-}
-const onSearchChangeDebounced = useCallback(
-  debounce(
-    (keyphrase) =>
-      dispatch(SearchResultsActions.KEYPHRASE_CHANGED, {
-        keyphrase
-      }),
-    500
-  ),
-  []
-);
+  const resetFacetsAndFilters = () => {
+    onClearFilters();
+    onPageNumberChange({page: 1})
+  }
+  useEffect(() => {
+    return () => {
+      resetFacetsAndFilters();
+    }
+  }, []);
+  const search = useLocation().search.split('=');
+  if (search.length > 1) {
+    keyphrase = search[1]
+  }
 
+  const handlePageClick = (e) => {
+    const page = e.selected + 1;
+    onPageNumberChange({ page })
+  }
+  const handleOnFacetClick = (payload) => {
+    onFacetClick(payload)
+    trackFullPageSearchFacetClickEvent('crm-search', payload.facetType, payload.facetValue, payload.facetValueIndex, payload.facetIndex);
+  }
   return (
     <Container>
+      <Widget rfkId="crm-plp-seo"/>
       {!loading && products.length ? (
-        <div className="rfk-full-page-search">
-          {keyphrase ? (
-            <div className="rfk_msg_prod">Top Results for: «{keyphrase}»</div>
-          ) : null}
-          <div className="rfk_sp rfk-sp">
+        <Grid container spacing={3}>
+          {/* Facets */}
+          <Grid item xs={4}>
             <FacetList
               facets={facets}
-              onFacetClick={(payload) => {
-                dispatch(SearchResultsActions.FACET_CLICKED, payload);
+              onFacetClick={handleOnFacetClick}
+              onClear={onClearFilters}
+            />
+          </Grid>
+          {/* Products + Filters */}
+          <Grid item xs={8}>
+            {!loading && totalPages > 0 ? (
+              <div>
+                <span>
+                  Shown
+                  {page < totalPages ? page * productsPerPage : totalItems}
+                  products out of {totalItems};
+                </span>
+                <span>
+                  Page {page} of {totalPages}
+                </span>
+              </div>
+            ) : null}
+            {totalItems === 0 ? "No results found" : null}
+            <PLPFilters
+              keyphrase={keyphrase}
+              productsPage={productsPerPage}
+              page={page}
+              sortType={sortType}
+              totalPages={totalPages}
+              sortDirection={sortDirection}
+              sortChoices={sortChoices}
+              onPerPageChange={(numProducts) => {
+                dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
+                  numProducts: Number(numProducts),
+                });
               }}
-              onClear={(payload) => {
-                dispatch(SearchResultsActions.CLEAR_FILTERS, payload);
+              onPageNumberChange={(page) => onPageNumberChange({ page })}
+              onSortChange={(payload) => {
+                dispatch(SearchResultsActions.SORT_CHANGED, payload);
+              }}
+              onSearchChange={onKeyphraseChange}
+            />
+            {keyphrase ? <h3>Top Results for: {keyphrase} </h3> : null}
+            <ProductList
+              products={products}
+              loaded={loaded}
+              loading={loading}
+              onProductClick={(payload) => {
+                dispatch(trackPDPViewEvent, payload);
               }}
             />
-            <div className="rfk_li" data-page={page}>
-              <PLPFilters
-                keyphrase={keyphrase}
-                productsPage={productsPerPage}
-                page={page}
-                sortType={sortType}
-                totalPages={totalPages}
-                sortDirection={sortDirection}
-                sortChoices={sortChoices}
-                onPerPageChange={(numProducts) => {
-                  dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
-                    numProducts: Number(numProducts),
-                  });
-                }}
-                onPageNumberChange={(page) => onPageNumberChange({page})}
-                onSortChange={(payload) => {
-                  dispatch(SearchResultsActions.SORT_CHANGED, payload);
-                }}
-                onSearchChange={onSearchChangeDebounced}
-              />
-              {!loading && totalPages > 0 ? (
-                <div className="rfk_sp_results_info">
-                  <span>
-                    Shown
-                    {page < totalPages ? page * productsPerPage : totalItems}
-                    products out of {totalItems};
-                  </span>
-                  <span>
-                    Page {page} of {totalPages}
-                  </span>
-                </div>
-              ) : null}
-              {totalItems === 0 ? "No results found" : null}
-              <ProductList
-                products={products}
-                loaded={loaded}
-                loading={loading}
-                onProductClick={(payload) => {
-                  dispatch(trackPDPViewEvent, payload);
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <div> Loading ... </div>
-      )}
+          </Grid>
+          <div className={classnames('issuesPagination', 'pagination')}>
+          <ReactPaginate
+            breakLabel="..."
+            nextLabel="next >"
+            onPageChange={handlePageClick}
+            pageRangeDisplayed={5}
+            pageCount={totalPages}
+            previousLabel="< previous"
+            forcePage={page-1}
+          />
+      </div>
+        </Grid>
+      ) 
+      : 
+      (<div> {loading ? "Loading ..." : "No products found"} </div>)
+      }
     </Container>
   );
 };

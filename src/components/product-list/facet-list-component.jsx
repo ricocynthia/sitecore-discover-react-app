@@ -3,7 +3,6 @@ import React, { useState } from "react";
 const FacetValues = ({
   values,
   tindex,
-  acumIndex,
   facetType,
   onFacetClick
 }) => {
@@ -12,7 +11,6 @@ const FacetValues = ({
       return <li
         key={index}
         index={index}
-        data-index={acumIndex + index || '0'}
         data-type={facetType}
         data-text={text}
         data-level="0"
@@ -26,14 +24,12 @@ const FacetValues = ({
                 facetType,
                 facetValue: text,
                 facetValueIndex,
-                valueIndex: acumIndex + index,
                 facetIndex: tindex,
                 checked: target.checked
               })}
           />
-          <label title="{text}({count})"
-            >{text}<span>({count})</span></label
-          >
+          <label title={`${text}(${count})`}
+            >{text}<span>({count})</span></label>
         </div>
       </li>;
     })}
@@ -71,9 +67,7 @@ const FacetList = ({ facets, onFacetClick, onClear }) => {
       {facets.some(({ values = [] }) =>
         values.some(({ selected }) => selected)
       )
-        ? <div onChange={onClear}>
-            Clear All
-          </div>
+        ? <button onClick={onClear}> Clear All </button>
         : null}
     </div>
     {facets.map(({ facetType, values, display_name, selected }, tindex) => {

@@ -1,5 +1,5 @@
-import { PageController, setWidget, trackPageViewEvent, Widget, WidgetDataType, init } from "@sitecore-discover/react";
-import React, { useEffect, useState } from "react";
+import { PageController, setWidget, trackPageViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
+import React, { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import RfkSearchResults from "../../rfk-widget-components/rfk-search-results-component";
 
@@ -20,6 +20,15 @@ const ProductListPageByGender = () => {
     const rfkSearchResultsConfig = {
         type: WidgetDataType.SEARCH_RESULTS,
         component: RfkSearchResults,
+        global: true,
+        options: {
+            preRender: true,
+            properties: {
+                initial: {
+                    query: { keyphrase: ['red'] }
+                }
+            }
+        }
       }
       setWidget('crm-search', rfkSearchResultsConfig)
       return (

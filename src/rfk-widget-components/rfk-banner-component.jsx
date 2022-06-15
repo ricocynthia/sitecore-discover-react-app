@@ -1,6 +1,3 @@
-// Recommendation Widget declaration
-import { useState } from "react";
-
 const RfkBanner = ({
 	appearance,
     cssContent,

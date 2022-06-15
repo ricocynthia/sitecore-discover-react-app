@@ -16,7 +16,6 @@ setCredentials({
  * 3) BANNER = "banner",
  * 4) HTML_BLOCK = "html_block",
  * 5) PREVIEW_SEARCH = "preview_search",
- *      TODO:
  * 6) SEARCH_RESULTS = "content_grid",
  * 
  * CANNOT FIND THESE WIDGET TYPES IN CEC:
