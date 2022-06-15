@@ -43,13 +43,16 @@ const RfkSearchResults = ({
   onResultsPerPageChange,
   onSortChange
 }) => {
-  const resetFacetsAndFilters = () => {
+  const reset = () => {
     onClearFilters();
     onPageNumberChange({page: 1})
+    if (keyphrase) {
+      onKeyphraseChange(null)
+    }
   }
   useEffect(() => {
     return () => {
-      resetFacetsAndFilters();
+      reset();
     }
   }, []);
   const search = useLocation().search.split('=');

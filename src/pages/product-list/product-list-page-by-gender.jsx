@@ -17,18 +17,24 @@ const ProductListPageByGender = () => {
             }
         })
     }, [location.pathname])
-    const rfkSearchResultsConfig = {
+    let rfkSearchResultsConfig = {
         type: WidgetDataType.SEARCH_RESULTS,
         component: RfkSearchResults,
-        global: true,
-        options: {
-            preRender: true,
+        global: true
+      }
+      if (location.search) {
+        const searchTerm = location.search.split("=")[1];
+        const options = {
             properties: {
-                initial: {
-                    query: { keyphrase: ['red'] }
-                }
+              initial: {
+                keyphrase: searchTerm,
+              },
             }
-        }
+        };
+        rfkSearchResultsConfig = {
+          ...rfkSearchResultsConfig,
+          options,
+        };
       }
       setWidget('crm-search', rfkSearchResultsConfig)
       return (

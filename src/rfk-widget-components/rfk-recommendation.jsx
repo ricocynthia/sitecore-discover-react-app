@@ -1,11 +1,8 @@
-// Recommendation Widget declaration
-import { useState } from "react";
 import { trackPDPViewEvent } from "@sitecore-discover/react";
 import { Container, Grid, Paper } from "@material-ui/core";
 
 const RfkRecommendation = ({
 	loading,
-	title,
 	products = [],
 	onNavigationNext,
 	onNavigationPrev,
