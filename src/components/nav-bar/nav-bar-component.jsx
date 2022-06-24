@@ -76,28 +76,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const rfkHeroMsgConfig = {
-  type: WidgetDataType.HTML_BLOCK,
-  component: RfkHeroMessage,
-};
-setWidget("crm-html-block-widget", rfkHeroMsgConfig);
-
-const rfkPreviewSearchConfig = {
-  type: WidgetDataType.PREVIEW_SEARCH,
-  component: RfkPreviewSearch,
-  global: true,
-  options: {
-    preRender: true,
-    properties: {
-      initial: {
-        redirectUrl: "/products?q=",
-        inputQuerySelector: "#rfkInput"
-      }
-    }
-  }
-}
-setWidget('crm-preview-search', rfkPreviewSearchConfig)
-
 const NavBar = (props) => {
   const navigate = useNavigate();
   const classes = useStyles();

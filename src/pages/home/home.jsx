@@ -1,9 +1,9 @@
 import { Widget } from "@sitecore-discover/react";
-import "../../config/reflektion-config";
 
 const Home = () => {
   return (
-    <div>
+    // data-rfkid is a workaround for the banner widget to appear
+    <div data-rfkid>
       <Widget rfkId="sdk-demo-homepage-banner" />
       <Widget rfkId="crm-recommendation-widget" />
       <Widget rfkId="crm-seo-widget" />

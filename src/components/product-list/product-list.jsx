@@ -1,17 +1,23 @@
-import { Grid, Container, Paper } from "@material-ui/core";
-import { trackPDPViewEvent } from "@sitecore-discover/react";
+import { Grid, Container, Paper, Button, Typography, IconButton, Card, CardActionArea, CardMedia, CardContent } from "@material-ui/core";
+import { useNavigate } from "react-router-dom";
+
+const priceStyles = {
+  textDecoration: 'line-through',
+  color: '#8c8c8c',
+  marginRight: '5px'
+}
 
 const Price = ({ max, min, price, finalPrice }) => {
     if (max) {
-      return <div className="rfksdk_price">
-        <span className="rfksdk_price__range">${min} - ${max}</span>
+      return <div>
+        <span>${min} - ${max}</span>
       </div>;
     }
-    const discounted = finalPrice !== price;
-    return <div className={discounted ? "rfksdk_price--discounted" : ""}>
-      <span className="rfksdk_price__original">${price}</span>
+    const discounted = parseFloat(finalPrice) !== parseFloat(price);
+    return <div>
+      <span style={discounted ? priceStyles : {}}>${price}</span>
       {discounted && finalPrice
-        ? <span className="rfksdk_price__final">${finalPrice}</span>
+        ? <span>${finalPrice}</span>
         : null}
     </div>;
   };
@@ -32,14 +38,15 @@ const ProductItem = ({
       align : "center"
     }
     let imgStyles = {
-      width: 200
+      width: 300
     }
     if (isPreviewSearch) {
       imgStyles = {
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        height: 150
+        // height: 200,
+        width: 200
       }
     }
     const {
@@ -52,21 +59,30 @@ const ProductItem = ({
       price,
       image_url
     } = product;
+    const navigate = useNavigate();
     return <Grid key={sku} item>
-    <Paper style={paperStyles} elevation={0}>
-      <div style={styleObject}>
-        <img style={imgStyles} src={image_url} />
-        <h4>{name}</h4>
-        {!isPreviewSearch ? sku : null}
-        { !isPreviewSearch ? <Price
-          price={price}
-          finalPrice={final_price}
-          min={final_price_min_formatted}
-          max={final_price_max_formatted}
-          /> : null}
-          <button onClick={() => trackPDPViewEvent(product.sku)}> create pdp view event</button>
-      </div>
-    </Paper>
+      <Card style={imgStyles} onClick={() => navigate(`/products/detail/${product.sku}`)}>
+      <CardActionArea>
+        <CardMedia
+          component="img"
+          height={imgStyles.height ?? 300}
+          image={image_url}
+        />
+        <CardContent style={!isPreviewSearch ? {height: '75px'} : {}}>
+          <Typography gutterBottom>
+            {name}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+          { !isPreviewSearch ? <Price
+              price={price}
+              finalPrice={final_price}
+              min={final_price_min_formatted}
+              max={final_price_max_formatted}
+              /> : null}
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
   </Grid>
   };
 
@@ -79,8 +95,8 @@ const ProductList = ({
       {!ready ? <div> Loading...</div>
       : ready && products.length > 0 
         ? <Grid container spacing={2}>
-        <Grid item xs={12}>
-          <Grid container justifyContent="center" spacing={3}>
+        <Grid item xs={isPreviewSearch ? 9 : 12}>
+          <Grid container justifyContent="center" spacing={2}>
             {products.map(product => <ProductItem 
             key={product.sku} 
             {...product} 

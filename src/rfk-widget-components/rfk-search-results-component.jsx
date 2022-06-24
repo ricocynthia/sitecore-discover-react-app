@@ -1,21 +1,14 @@
 import { Container, Grid } from "@material-ui/core";
-import { setWidget, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
+import { defaultRequests, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
 import { SearchResultsActions } from "@sitecore-discover/widgets";
 import classnames from 'classnames';
 import { useEffect } from "react";
 import ReactPaginate from 'react-paginate';
-import { useLocation } from "react-router-dom";
 import FacetList from "../components/product-list/facet-list-component";
 import PLPFilters from "../components/product-list/filters";
 import ProductList from "../components/product-list/product-list";
-import RfkSeoComponent from "./rfk-seo-component";
 import './styles/rfk-search-results.component.css';
 
-const rfkPLPSeoConfig = {
-  type: WidgetDataType.SEO,
-  component: RfkSeoComponent
-}
-setWidget('crm-plp-seo', rfkPLPSeoConfig);
 // ACTION PROPS:
 // onClearFilters
 // onFacetClick
@@ -64,8 +57,9 @@ const RfkSearchResults = ({
     onFacetClick(payload)
     trackFullPageSearchFacetClickEvent('crm-search', payload.facetType, payload.facetValue, payload.facetValueIndex, payload.facetIndex);
   }
+
   return (
-    <Container>
+    <Container style={{marginTop: '1rem'}}>
       <Widget rfkId="crm-plp-seo"/>
       {!loading && products.length ? (
         <Grid container spacing={3}>
@@ -79,38 +73,39 @@ const RfkSearchResults = ({
           </Grid>
           {/* Products + Filters */}
           <Grid item xs={8}>
-            {!loading && totalPages > 0 ? (
-              <div>
-                <span>
-                  Shown
-                  {page < totalPages ? page * productsPerPage : totalItems}
-                  products out of {totalItems};
-                </span>
-                <span>
-                  Page {page} of {totalPages}
-                </span>
-              </div>
-            ) : null}
-            {totalItems === 0 ? "No results found" : null}
-            <PLPFilters
-              keyphrase={keyphrase}
-              productsPage={productsPerPage}
-              page={page}
-              sortType={sortType}
-              totalPages={totalPages}
-              sortDirection={sortDirection}
-              sortChoices={sortChoices}
-              onPerPageChange={(numProducts) => {
-                dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
-                  numProducts: Number(numProducts),
-                });
-              }}
-              onPageNumberChange={(page) => onPageNumberChange({ page })}
-              onSortChange={(payload) => {
-                dispatch(SearchResultsActions.SORT_CHANGED, payload);
-              }}
-              onSearchChange={onKeyphraseChange}
-            />
+            <Grid container>
+            <Grid item xs={9}>
+              {!loading && totalPages > 0 ? (
+                <div>
+                  <span>
+                    {(page * productsPerPage) - productsPerPage + 1} - {(page * productsPerPage) > totalItems ? totalItems : (page * productsPerPage)} of {totalItems} results
+                  </span>
+                </div>
+              ) : null}
+              </Grid>
+              {totalItems === 0 ? "No results found" : null}
+              <Grid item xs={3}>
+                <PLPFilters
+                  keyphrase={keyphrase}
+                  productsPage={productsPerPage}
+                  page={page}
+                  sortType={sortType}
+                  sortDirection={sortDirection}
+                  totalPages={totalPages}
+                  sortChoices={sortChoices}
+                  onPerPageChange={(numProducts) => {
+                    dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
+                      numProducts: Number(numProducts),
+                    });
+                  }}
+                  onPageNumberChange={(page) => onPageNumberChange({ page })}
+                  onSortChange={(payload) => {
+                    onSortChange(payload);
+                  }}
+                  onSearchChange={onKeyphraseChange}
+                />
+              </Grid>
+            </Grid>
             {keyphrase ? <h3>Top Results for: {keyphrase} </h3> : null}
             <ProductList
               products={products}

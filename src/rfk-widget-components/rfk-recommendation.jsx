@@ -4,9 +4,10 @@ import { Container, Grid, Paper } from "@material-ui/core";
 const RfkRecommendation = ({
 	loading,
 	products = [],
+	onProductClick,
+	// can i get more context on what/why this is needed? for analytics?
 	onNavigationNext,
-	onNavigationPrev,
-	onProductClick
+	onNavigationPrev
 }) => {
 	const styleObject = {
 		width : 200, 
@@ -38,6 +39,7 @@ const RfkRecommendation = ({
 										<b>Price: {product.price}</b>
 										<br />
 										<button onClick={() => onPDPEventBtnClick(product.sku)}> create pdp view event</button>
+										<button onClick={() => onNavigationNext({index: 3})}> what does this do?</button>
 									</div>
 								</Paper>
 							</Grid>

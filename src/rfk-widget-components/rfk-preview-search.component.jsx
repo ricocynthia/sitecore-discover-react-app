@@ -1,7 +1,7 @@
 import ProductList from "../components/product-list/product-list";
 import { useEffect, useState, useRef } from "react";
 import { useCallback } from "react";
-import { debounce } from "@material-ui/core";
+import { debounce, Grid } from "@material-ui/core";
 
 const RfkPreviewSearch = ({
     loading,
@@ -90,29 +90,37 @@ const RfkPreviewSearch = ({
     
       useClickOutside(containerRef, () => {
         setOpen(false)
+        onKeyphraseChange(null)
+        // clear keyphrase in input
         const inputRef = document.querySelector(inputQuerySelector);
         inputRef.value = ''
-        products=[]
     });
 
     return loading ? (
         <div> Loading... </div>
     ) : (
-        open ? <div style={{backgroundColor: 'white'}}
+        open ? <Grid container style={{backgroundColor: 'white', color: 'black'}}
         ref={containerRef}>
-            <div>
-            {keyphrase ? <h3 style={{color: "black"}}>Top results for {keyphrase}</h3> : null }
-            <ProductList
-                products={products?.slice(0, 6)}
-                loaded={loaded}
-                loading={loading}
-                onProductClick={(payload) => {
-                    console.log(payload);
-                }}
-                isPreviewSearch={true}
-            />
-            </div>
-        </div> : null
+            <Grid item xs={6}>
+            {suggestions && suggestions.length ? <div><h3>Did you mean?</h3>
+              <ul>
+              {suggestions.map(suggestion => <li> {suggestion.text}</li>)}
+            </ul></div>
+             : null }
+            </Grid>
+            <Grid item xs={6}>
+              {keyphrase ? <h3>Top results for {keyphrase}</h3> : null }
+              <ProductList
+                  products={products?.slice(0, 6)}
+                  loaded={loaded}
+                  loading={loading}
+                  onProductClick={(payload) => {
+                      console.log(payload);
+                  }}
+                  isPreviewSearch={true}
+              />
+            </Grid>
+        </Grid> : null
     );
 };
 export default RfkPreviewSearch;

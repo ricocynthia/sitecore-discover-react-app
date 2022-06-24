@@ -1,4 +1,6 @@
+import { FormControlLabel, FormGroup, Checkbox, Button, Paper, Accordion, AccordionSummary, Typography, AccordionDetails, List, ListItem } from "@material-ui/core";
 import React, { useState } from "react";
+import { useEffect } from "react";
 
 const FacetValues = ({
   values,
@@ -6,88 +8,71 @@ const FacetValues = ({
   facetType,
   onFacetClick
 }) => {
-  return <ul>
+  return <FormGroup>
     {values.map(({ index: facetValueIndex, text, count, selected }, index) => {
-      return <li
-        key={index}
-        index={index}
-        data-type={facetType}
-        data-text={text}
-        data-level="0"
-      >
-        <div>
-          <input
-            type="checkbox"
-            checked={selected ? "checked" : ""}
-            onChange={({ target }) =>
+      return <FormControlLabel key={index} control={<Checkbox checked={selected} onChange={({ target }) =>
               onFacetClick({
                 facetType,
                 facetValue: text,
                 facetValueIndex,
                 facetIndex: tindex,
                 checked: target.checked
-              })}
-          />
-          <label title={`${text}(${count})`}
-            >{text}<span>({count})</span></label>
-        </div>
-      </li>;
+              })} />} label={text} />
+          ;
     })}
-  </ul>;
+  </FormGroup>
 };
 
 const Facet = ({ name, values, index, acumIndex, type, onFacetClick }) => {
-  const [toggle, setToggle] = useState(false);
-  return <li data-toggle={toggle ? "1" : "0"}>
-    <div
-      
-      data-toggle={toggle ? "1" : "0"}
-      onChange={() => setToggle(!toggle)}
-    >
-      <span>{name}</span>
-    </div>
-    <div >
-      <span ></span>
-      <FacetValues
+  return <FacetValues
         values={values}
         tindex={index}
         acumIndex={acumIndex}
         facetType={type}
         onFacetClick={onFacetClick}
-      />
-    </div>
-  </li>;
+      />;
 };
 
 const FacetList = ({ facets, onFacetClick, onClear }) => {
   let acumIndex = 0;
-  return <div >
-    <div >
-      <span>Filter By</span>
+  const [panelsOpen, setPanelOpen] = useState(new Array(facets.length).fill(true))
+
+  const onAccordionChange = (i) => (event, isExpanded) => {
+    const data = panelsOpen;
+    data[i] = isExpanded
+    setPanelOpen(data)
+  };
+  
+
+  return <Paper>
+    <List>
+      <ListItem>
+      <Typography variant="h6">Filter By</Typography>
+      </ListItem>
       {facets.some(({ values = [] }) =>
         values.some(({ selected }) => selected)
       )
-        ? <button onClick={onClear}> Clear All </button>
+        ? <ListItem> <Button onClick={onClear}> Clear All Filters</Button> </ListItem>
         : null}
-    </div>
-    {facets.map(({ facetType, values, display_name, selected }, tindex) => {
-      const componentHtml = <ul
-      key={tindex}
-        data-type={facetType}
-        data-sli="0"
-      >
+    </List>
+      {facets.map(({ facetType, values, display_name, selected }, tindex) => 
+    <Accordion key={tindex} expanded={panelsOpen[tindex]} onChange={onAccordionChange(tindex)}>
+        <AccordionSummary aria-controls={`panel${tindex}a-content`}
+        id={`panel${tindex}a-header}`}>
+          <Typography> {display_name} </Typography>
+        </AccordionSummary>
+        <AccordionDetails>
         <Facet
-          name={display_name}
-          index={tindex}
-          type={facetType}
-          values={values}
-          onFacetClick={onFacetClick}
-        />
-      </ul>;
-      acumIndex = acumIndex + values.length;
-      return componentHtml;
-    })}
-  </div>;
+            name={display_name}
+            index={tindex}
+            type={facetType}
+            values={values}
+            onFacetClick={onFacetClick}
+          />
+        </AccordionDetails>
+        </Accordion>
+      )}
+  </Paper>;
 };
 
 export default FacetList;
