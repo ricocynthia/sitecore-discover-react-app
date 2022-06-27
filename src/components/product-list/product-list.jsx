@@ -29,23 +29,14 @@ const ProductItem = ({
     isPreviewSearch = false,
     ...product
   }) => {
-    const paperStyles = {
-      height: isPreviewSearch ? null : 400,
+    let cardStyles = {
       width: 300,
     }
-    const styleObject = {
-      width : isPreviewSearch ? null : 200, 
-      align : "center"
-    }
-    let imgStyles = {
-      width: 300
-    }
     if (isPreviewSearch) {
-      imgStyles = {
+      cardStyles = {
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
-        // height: 200,
         width: 200
       }
     }
@@ -61,15 +52,15 @@ const ProductItem = ({
     } = product;
     const navigate = useNavigate();
     return <Grid key={sku} item>
-      <Card style={imgStyles} onClick={() => navigate(`/products/detail/${product.sku}`)}>
+      <Card style={cardStyles} onClick={() => navigate(`/products/detail/${product.sku}`)}>
       <CardActionArea>
         <CardMedia
           component="img"
-          height={imgStyles.height ?? 300}
+          height={isPreviewSearch ? 150 : 300}
           image={image_url}
         />
-        <CardContent style={!isPreviewSearch ? {height: '75px'} : {}}>
-          <Typography gutterBottom>
+        <CardContent style={!isPreviewSearch ? {height: '75px'} : {height: '35px'}}>
+          <Typography gutterBottom variant={isPreviewSearch ? "inherit" : undefined}>
             {name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
