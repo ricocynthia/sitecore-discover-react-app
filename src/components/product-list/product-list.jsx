@@ -1,81 +1,5 @@
-import { Grid, Container, Paper, Button, Typography, IconButton, Card, CardActionArea, CardMedia, CardContent } from "@material-ui/core";
-import { useNavigate } from "react-router-dom";
-
-const priceStyles = {
-  textDecoration: 'line-through',
-  color: '#8c8c8c',
-  marginRight: '5px'
-}
-
-const Price = ({ max, min, price, finalPrice }) => {
-    if (max) {
-      return <div>
-        <span>${min} - ${max}</span>
-      </div>;
-    }
-    const discounted = parseFloat(finalPrice) !== parseFloat(price);
-    return <div>
-      <span style={discounted ? priceStyles : {}}>${price}</span>
-      {discounted && finalPrice
-        ? <span>${finalPrice}</span>
-        : null}
-    </div>;
-  };
-  
-const ProductItem = ({
-    includeSku,
-    className,
-    onClick,
-    isPreviewSearch = false,
-    ...product
-  }) => {
-    let cardStyles = {
-      width: 300,
-    }
-    if (isPreviewSearch) {
-      cardStyles = {
-        display: 'block',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: 200
-      }
-    }
-    const {
-      url,
-      name,
-      sku,
-      final_price_min_formatted,
-      final_price_max_formatted,
-      final_price,
-      price,
-      image_url
-    } = product;
-    const navigate = useNavigate();
-    return <Grid key={sku} item>
-      <Card style={cardStyles} onClick={() => navigate(`/products/detail/${product.sku}`)}>
-      <CardActionArea>
-        <CardMedia
-          component="img"
-          height={isPreviewSearch ? 150 : 300}
-          image={image_url}
-        />
-        <CardContent style={!isPreviewSearch ? {height: '75px'} : {height: '35px'}}>
-          <Typography gutterBottom variant={isPreviewSearch ? "inherit" : undefined}>
-            {name}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-          { !isPreviewSearch ? <Price
-              price={price}
-              finalPrice={final_price}
-              min={final_price_min_formatted}
-              max={final_price_max_formatted}
-              /> : null}
-          </Typography>
-        </CardContent>
-      </CardActionArea>
-    </Card>
-  </Grid>
-  };
+import { Container, Grid } from "@material-ui/core";
+import ProductCard from "../shared/product-card";
 
 const ProductList = ({ 
   products = [], onProductClick, onDiscoverStyleOpen, loaded, loading,
@@ -88,7 +12,7 @@ const ProductList = ({
         ? <Grid container spacing={2}>
         <Grid item xs={isPreviewSearch ? 9 : 12}>
           <Grid container justifyContent="center" spacing={2}>
-            {products.map(product => <ProductItem 
+            {products.map(product => <ProductCard 
             key={product.sku} 
             {...product} 
             onClick={onProductClick} 

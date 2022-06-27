@@ -29,7 +29,7 @@ import RfkSearchResults from "../rfk-widget-components/rfk-search-results-compon
  */
 const rfkRecommendationConfig = {
   type: WidgetDataType.RECOMMENDATION,
-  component: RfkRecommendation,
+  component: RfkRecommendation
 };
 
 // const rfkBannerConfig = {
@@ -60,6 +60,7 @@ setWidget("crm-preview-search", rfkPreviewSearchConfig);
 setWidget("crm-recommendation-widget", rfkRecommendationConfig);
 setWidget("crm-seo-widget", rfkSeoConfig);
 setWidget("sdk-demo-homepage-banner", { type: WidgetDataType.BANNER });
+setWidget("crm-similar-products", rfkRecommendationConfig);
 
 // Search Results logic
 let rfkSearchResultsConfig = {

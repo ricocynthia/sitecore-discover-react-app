@@ -4,6 +4,7 @@ import { SearchResultsActions } from "@sitecore-discover/widgets";
 import classnames from 'classnames';
 import { useEffect } from "react";
 import ReactPaginate from 'react-paginate';
+import { useNavigate } from "react-router-dom";
 import FacetList from "../components/product-list/facet-list-component";
 import PLPFilters from "../components/product-list/filters";
 import ProductList from "../components/product-list/product-list";
@@ -56,6 +57,11 @@ const RfkSearchResults = ({
   const handleOnFacetClick = (payload) => {
     onFacetClick(payload)
     trackFullPageSearchFacetClickEvent('crm-search', payload.facetType, payload.facetValue, payload.facetValueIndex, payload.facetIndex);
+  }
+  
+  const navigate = useNavigate();
+  const routeToPDP = (sku) => {
+    navigate(`/products/detail/${sku}`)
   }
 
   return (
@@ -111,9 +117,7 @@ const RfkSearchResults = ({
               products={products}
               loaded={loaded}
               loading={loading}
-              onProductClick={(payload) => {
-                dispatch(trackPDPViewEvent, payload);
-              }}
+              onProductClick={routeToPDP}
             />
           </Grid>
           <div className={classnames('issuesPagination', 'pagination')}>

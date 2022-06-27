@@ -9,6 +9,7 @@ import {
   Link,
   ListItem,
 } from "@material-ui/core";
+import { useNavigate } from "react-router-dom";
 
 const RfkPreviewSearch = ({
   loading,
@@ -25,6 +26,8 @@ const RfkPreviewSearch = ({
   onSuggestionChange,
   onTrendingCategoryChange,
 }) => {
+  const navigate = useNavigate();
+
   const changeKeyphrase = useCallback(
     debounce(
       (target) =>
@@ -103,6 +106,10 @@ const RfkPreviewSearch = ({
     inputRef.value = "";
   });
 
+  const routeToPDP = (sku) => {
+    navigate(`/products/detail/${sku}`)
+  }
+
   return loading ? (
     <div> Loading... </div>
   ) : open ? (
@@ -141,9 +148,7 @@ const RfkPreviewSearch = ({
             products={products?.slice(0, 6)}
             loaded={loaded}
             loading={loading}
-            onProductClick={(payload) => {
-              console.log(payload);
-            }}
+            onProductClick={routeToPDP}
             isPreviewSearch={true}
           />
         </Grid>

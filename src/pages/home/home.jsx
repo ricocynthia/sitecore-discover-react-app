@@ -5,7 +5,7 @@ const Home = () => {
     // data-rfkid is a workaround for the banner widget to appear
     <div data-rfkid>
       <Widget rfkId="sdk-demo-homepage-banner" />
-      <Widget rfkId="crm-recommendation-widget" />
+      <Widget rfkId="crm-recommendation-widget" title="Popular Products" />
       <Widget rfkId="crm-seo-widget" />
     </div>
   );
