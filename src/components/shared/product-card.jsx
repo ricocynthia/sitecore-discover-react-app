@@ -1,12 +1,6 @@
-import { Button, Card, CardActionArea, CardContent, CardMedia, Grid, Typography } from "@material-ui/core";
-import { PageController } from "@sitecore-discover/react";
-import { useNavigate } from "react-router-dom";
+import { Button, Card, CardActionArea, CardContent, CardMedia, Container, Grid, Typography } from "@material-ui/core";
 import Price from "./price";
 
-const updateContextSku = (sku) => {
-    const context = PageController.getContext();
-    context.setPageSkus([sku])
-}
 
 const ProductCard = ({
     includeSku,
@@ -37,7 +31,7 @@ const ProductCard = ({
     } = product;
     return <Grid key={sku} item style={{flex: '1 !important'}}>
       <Card style={cardStyles} onClick={() => onClick(product.sku)}>
-      <CardActionArea >
+      <CardActionArea>
         <CardMedia
           component="img"
           height={isPreviewSearch ? 150 : 300}
@@ -47,17 +41,17 @@ const ProductCard = ({
           <Typography gutterBottom variant={isPreviewSearch ? "inherit" : undefined}>
             {name}
           </Typography>
-          <Typography variant="body2" color="text.secondary">
           { !isPreviewSearch ? <Price
               price={price}
               finalPrice={final_price}
               min={final_price_min_formatted}
               max={final_price_max_formatted}
               /> : null}
-          </Typography>
-          {!isPreviewSearch ? <Button fullWidth style={{ marginTop: "1rem", marginBottom: "1rem" }} variant="contained"> Add to Cart </Button> : null}
         </CardContent>
       </CardActionArea>
+      <Container>
+          {!isPreviewSearch ? <Button fullWidth style={{ marginTop: "1rem", marginBottom: "1rem" }} variant="contained"> Add to Cart </Button> : null}
+      </Container>
     </Card>
   </Grid>
   };

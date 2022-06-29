@@ -1,5 +1,5 @@
 import { Container, Grid } from "@material-ui/core";
-import { defaultRequests, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
+import { defaultRequests, PageController, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
 import { SearchResultsActions } from "@sitecore-discover/widgets";
 import classnames from 'classnames';
 import { useEffect } from "react";
@@ -43,6 +43,9 @@ const RfkSearchResults = ({
     if (keyphrase) {
       onKeyphraseChange(null)
     }
+    const context = PageController.getContext();
+    context.setPageUri(window.location.pathname)
+    PageController.setContext(context)
   }
   useEffect(() => {
     return () => {

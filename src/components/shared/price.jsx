@@ -1,3 +1,5 @@
+import { Typography } from "@material-ui/core";
+
 const priceStyles = {
   textDecoration: "line-through",
   color: "#8c8c8c",
@@ -16,10 +18,9 @@ const Price = ({ max, min, price, finalPrice }) => {
   }
   const discounted = parseFloat(finalPrice) !== parseFloat(price);
   return (
-    <div>
-      <span style={discounted ? priceStyles : {}}>${price}</span>
-      {discounted && finalPrice ? <span>${finalPrice}</span> : null}
-    </div>
+    <Typography variant="body2">
+      <span style={discounted ? priceStyles : {}}>${price}</span> {discounted && finalPrice ? <span>${finalPrice}</span> : null}
+    </Typography>
   );
 };
 export default Price;

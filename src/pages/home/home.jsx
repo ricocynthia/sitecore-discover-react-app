@@ -6,7 +6,6 @@ const Home = () => {
     <div data-rfkid>
       <Widget rfkId="sdk-demo-homepage-banner" />
       <Widget rfkId="crm-recommendation-widget" title="Popular Products" />
-      <Widget rfkId="crm-seo-widget" />
     </div>
   );
 };

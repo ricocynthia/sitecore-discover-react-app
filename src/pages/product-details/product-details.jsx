@@ -13,11 +13,11 @@ import ProductDetailsComponent from "../../components/product-details/product-de
 
 const ProductDetails = () => {
   const location = useLocation();
+  const sku = window.location.pathname.split("/")[3];
 
   const [loading, setLoading] = useState(true);
   const [productDetails, setProductDetails] = useState({});
 
-  const sku = window.location.pathname.split("/")[3];
   
   useEffect(() => {
     if (!loading) {
@@ -26,35 +26,38 @@ const ProductDetails = () => {
   }, [loading]);
   
   useEffect(() => {
+    /**
+     // const searchResultsRequest = DiscoverSDK.SearchResultsRequest('crm-search')
+     //   .addContextPageSku([sku])
+     //   .setContextValues({ product: {} });
+     // const htmlBlockRequest = DiscoverSDK.HtmlBlockRequest('rfkid_123');
+     // Promise.all([searchResultsRequest.fetch(), htmlBlockRequest.fetch()]).then(res => console.log(res))
+     * 
+     */
+      
+    // set context for rec widget
     const context = PageController.getContext();
     context.setPageSkus([sku])
     PageController.setContext(context)
+    // call api to get single product for pdp
+    const singleProductReq = defaultRequests
+      .getDefaultRequestFor(WidgetDataType.SEARCH_RESULTS)
+      .setWidgetRfkid("crm-search")
+      .addContextPageSku(sku)
+      .setContextValues({ product: {} })
+    singleProductReq.fetch().then((response) => {
+        // process response right after the promise returns
+        const productData = response.context_values.product.value[0];
+        setProductDetails(productData);
+        setLoading(false);
+      })
+      .catch((error) => {
+        // process error
+        console.log(error.message);
+        setLoading(false);
+      });
   }, [location]);
 
-  const singleProductReq = defaultRequests
-    .getDefaultRequestFor(WidgetDataType.SEARCH_RESULTS)
-    .setRfkId("crm-search")
-    .setWidgetRfkid("crm-search")
-    .addContextPageSku(sku)
-    .setContextValues({ product: {} })
-    .resetContent()
-    .resetSort()
-    .resetFacet()
-    .resetPageNumber();
-
-  singleProductReq
-    .fetch(singleProductReq)
-    .then((response) => {
-      // process response right after the promise returns
-      const productData = response.context_values.product.value[0];
-      setProductDetails(productData);
-      setLoading(false);
-    })
-    .catch((error) => {
-      // process error
-      console.log(error.message);
-      setLoading(false);
-    });
   
   return loading ? (
     isLoadingContent

@@ -1,10 +1,4 @@
 import { Container } from "@material-ui/core";
-import {
-  defaultRequests,
-  PageController,
-  trackPDPViewEvent,
-  WidgetDataType,
-} from "@sitecore-discover/react";
 import Carousel from "react-multi-carousel";
 import "react-multi-carousel/lib/styles.css";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +14,6 @@ const RfkRecommendation = ({
 }) => {
   const navigate = useNavigate();
   const onPDPEventBtnClick = (sku) => {
-    trackPDPViewEvent(sku);
     onProductClick(sku);
     navigate(`/products/detail/${sku}`);
   };
