@@ -1,11 +1,13 @@
-import { Widget } from "@sitecore-discover/react";
+import { BannerWidget, Widget } from "@sitecore-discover/react";
+import RfkRecommendation from "../../rfk-widget-components/rfk-recommendation";
 
 const Home = () => {
   return (
     // data-rfkid is a workaround for the banner widget to appear
-    <div data-rfkid>
-      <Widget rfkId="sdk-demo-homepage-banner" />
-      <Widget rfkId="crm-recommendation-widget" title="Popular Products" />
+    <div>
+      <BannerWidget rfkId="sdk-demo-homepage-banner" />
+      <RfkRecommendation rfkId="crm-recommendation-widget" title="Popular Products" />
+      {/* <Widget rfkId="crm-recommendation-widget" title="Popular Products" /> */}
     </div>
   );
 };

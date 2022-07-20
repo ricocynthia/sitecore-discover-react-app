@@ -1,12 +1,13 @@
 import { Container } from "@material-ui/core";
-import { Widget } from "@sitecore-discover/react";
+import { SearchResultsWidget, Widget } from "@sitecore-discover/react";
 import React from "react";
+import RfkSearchResultsComponent from "../../rfk-widget-components/rfk-search-results-component";
 
 
 const ProductListPage = () => {
   return (
           <Container>
-              <Widget rfkId="crm-search" />
+              <RfkSearchResultsComponent rfkId="crm-search" initialProductsPerPage={10} page={2} />
           </Container>
       )
 }

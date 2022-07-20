@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.12.4",
-    "@sitecore-discover/react": "^0.2.3",
+    "@sitecore-discover/react": "^1.0.0-alpha.0",
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

@@ -2,10 +2,10 @@ import { Container, Grid } from "@material-ui/core";
 import ProductCard from "../shared/product-card";
 
 const ProductList = ({ 
-  products = [], onProductClick, onDiscoverStyleOpen, loaded, loading,
+  products = [], onProductClick, loading,
   isPreviewSearch = false
  }) => {
-  const ready = loaded && !loading;
+  const ready = !loading;
   return (<Container>
       {!ready ? <div> Loading...</div>
       : ready && products.length > 0 

@@ -5,9 +5,16 @@ import Home from "./pages/home/home";
 import PageNotFound from "./pages/page-not-found/page-not-found";
 import ProductListPage from "./pages/product-list/product-list-page";
 import ProductDetails from "./pages/product-details/product-details";
-import "./config/reflektion-config";
+import {  WidgetsProvider } from "@sitecore-discover/react";
 
 function App() {
+  const DiscoverConfig = {
+    env: process.env.REACT_APP_ENVIRONMENT,
+    customerKey: process.env.REACT_APP_CUSTOMER_KEY,
+    apiKey: process.env.REACT_APP_API_KEY,
+    useToken: true,
+  };
+
   const routes = useRoutes([
     {
       path: "/",
@@ -30,8 +37,10 @@ function App() {
 
   return (
     <div>
+      <WidgetsProvider {...DiscoverConfig}>
       <NavBar />
-      {routes}
+        {routes}
+      </WidgetsProvider>
     </div>
   );
 }

@@ -10,23 +10,31 @@ import {
   ListItem,
 } from "@material-ui/core";
 import { useNavigate } from "react-router-dom";
+import { usePreviewSearch, widget, WidgetDataType } from "@sitecore-discover/react";
 
-const RfkPreviewSearch = ({
-  loading,
-  loaded,
-  products,
-  categories,
-  keyphrase,
-  inputQuerySelector,
-  redirectUrl,
-  suggestions,
-  trendingCategories,
-  onCategoryChange,
-  onKeyphraseChange,
-  onSuggestionChange,
-  onTrendingCategoryChange,
-}) => {
+const RfkPreviewSearch = (props) => {
   const navigate = useNavigate();
+  const { 
+    actions: {
+      onKeyphraseChange
+    },
+    context: { keyphrase },
+    queryResult: {
+    isError,
+    isLoading,
+    isFetching,
+    data: {
+      content: { product: { value: products = [] } = {} } = {},
+      suggestion
+    } = {},
+  }} = usePreviewSearch((query) => {
+    return {
+      keyphrase: props.keyphrase
+    }
+  })
+  const onFocus = (keyphrase) => {
+    changeKeyphrase({ value: keyphrase });
+  };
 
   const changeKeyphrase = useCallback(
     debounce(
@@ -39,78 +47,56 @@ const RfkPreviewSearch = ({
     []
   );
 
-  const onFocus = (keyphrase) => {
-    changeKeyphrase({ value: keyphrase });
-  };
+  const inputQuerySelector = document.getElementById('rfkInput');
 
-  const changeCategory = useCallback(
-    debounce((category) => {
-      dispatch(RFK.widgets.PreviewSearchActions.CATEGORY_CHANGED, { category });
-    }, 200)
-  );
+    const [open, setOpen] = useState(false);
 
-  const changeTrendingCategory = useCallback(
-    debounce((trendingCategory) => {
-      dispatch(RFK.widgets.PreviewSearchActions.TRENDING_CATEGORY_CHANGED, {
-        trendingCategory,
-      });
-    }, 200)
-  );
-
-  const changeSuggestion = useCallback(
-    debounce((suggestion) => {
-      dispatch(RFK.widgets.PreviewSearchActions.SUGGESTION_CHANGED, {
-        suggestion,
-      });
-    }, 200)
-  );
-
-  const [open, setOpen] = useState(false);
-
-  const inputFocusFn = () => {
-    setOpen(true);
-    onFocus(keyphrase);
-  };
-
-  useEffect(() => {
-    const inputRef = document.querySelector(inputQuerySelector);
-    inputRef.addEventListener("keyup", (e) => {
-      switch (e.key) {
-        case "Escape":
-          setOpen(false);
-          inputRef.value = "";
-          break;
-        case "Enter":
-          window.location = `${redirectUrl}${e.target.value}`;
-          break;
-        default:
-          setOpen(true);
-          changeKeyphrase(e.target);
-          break;
-      }
-    });
-    inputRef.addEventListener("focus", inputFocusFn);
-    return () => {
-      inputRef.removeEventListener("change", changeKeyphrase);
-      inputRef.removeEventListener("focus", inputFocusFn);
+    const inputFocusFn = () => {
+      setOpen(true);
+      onFocus(keyphrase);
     };
-  }, [inputQuerySelector]);
+    
+    const containerRef = useRef(null);
 
-  const containerRef = useRef(null);
+    useClickOutside(containerRef, () => {
+      setOpen(false);
+      onKeyphraseChange(null);
+      // clear keyphrase in input
+      const inputRef = document.querySelector('#rfkInput');
+      inputRef.value = "";
+    });
 
-  useClickOutside(containerRef, () => {
-    setOpen(false);
-    onKeyphraseChange(null);
-    // clear keyphrase in input
-    const inputRef = document.querySelector(inputQuerySelector);
-    inputRef.value = "";
-  });
+    useEffect(() => {
+      const inputRef = document.querySelector("#rfkInput");
+      // if (inputRef){
+      inputRef.addEventListener("keyup", (e) => {
+        switch (e.key) {
+          case "Escape":
+            setOpen(false);
+            inputRef.value = "";
+            break;
+          case "Enter":
+            window.location = `${redirectUrl}${e.target.value}`;
+            break;
+          default:
+            setOpen(true);
+            changeKeyphrase(e.target);
+            break;
+        }
+      });
+      inputRef.addEventListener("focus", inputFocusFn);
+      return () => {
+        inputRef.removeEventListener("change", changeKeyphrase);
+        inputRef.removeEventListener("focus", inputFocusFn);
+      };
+    }, [inputQuerySelector]);
 
-  const routeToPDP = (sku) => {
-    navigate(`/products/detail/${sku}`)
-  }
+    const routeToPDP = (sku) => {
+      navigate(`/products/detail/${sku}`)
+    };
+    
 
-  return loading ? (
+  return isLoading ? (
     <div> Loading... </div>
   ) : open ? (
     <Grid
@@ -120,11 +106,11 @@ const RfkPreviewSearch = ({
     >
       <Container fixed>
         <Grid item xs={2}>
-          {suggestions && suggestions.length ? (
+          {suggestion && suggestion.keyphrase?.length ? (
             <div>
               <h3>Did you mean?</h3>
               <List>
-                {suggestions.map((suggestion) => (
+                {suggestion.keyphrase.map((suggestion) => (
                   <ListItem key={suggestion.text}>
                     <Link
                       href={`/products?q=${suggestion.text}`}
@@ -146,8 +132,8 @@ const RfkPreviewSearch = ({
           )}
           <ProductList
             products={products?.slice(0, 6)}
-            loaded={loaded}
-            loading={loading}
+            loaded={!isLoading}
+            loading={isLoading}
             onProductClick={routeToPDP}
             isPreviewSearch={true}
           />
@@ -156,7 +142,7 @@ const RfkPreviewSearch = ({
     </Grid>
   ) : null;
 };
-export default RfkPreviewSearch;
+export default widget(RfkPreviewSearch, WidgetDataType.PREVIEW_SEARCH);
 
 const useClickOutside = (ref, handler) => {
   useEffect(() => {

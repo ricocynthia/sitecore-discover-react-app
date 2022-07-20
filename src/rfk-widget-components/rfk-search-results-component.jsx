@@ -1,6 +1,7 @@
 import { Container, Grid } from "@material-ui/core";
-import { defaultRequests, PageController, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
-import { SearchResultsActions } from "@sitecore-discover/widgets";
+// import { defaultRequests, PageController, trackFullPageSearchFacetClickEvent, trackPDPViewEvent, Widget, WidgetDataType } from "@sitecore-discover/react";
+import { useSearchResults, widget, WidgetDataType } from '@sitecore-discover/react';
+// import { SearchResultsActions } from "@sitecore-discover/widgets";
 import classnames from 'classnames';
 import { useEffect } from "react";
 import ReactPaginate from 'react-paginate';
@@ -10,56 +11,74 @@ import PLPFilters from "../components/product-list/filters";
 import ProductList from "../components/product-list/product-list";
 import './styles/rfk-search-results.component.css';
 
-// ACTION PROPS:
-// onClearFilters
-// onFacetClick
-// onKeyphraseChange
-// onPageNumberChange
-// onResultsPerPageChange
-// onSortChange
-const RfkSearchResults = ({
-  loaded,
-  loading,
-  page = 1,
-  keyphrase,
-  productsPerPage = 10,
-  totalPages,
-  totalItems,
-  sortType,
-  sortDirection,
-  sortChoices,
-  products = [],
-  facets = [],
-  onClearFilters,
-  onFacetClick,
-  onKeyphraseChange,
-  onPageNumberChange,
-  onResultsPerPageChange,
-  onSortChange
-}) => {
-  const reset = () => {
-    onClearFilters();
-    onPageNumberChange({page: 1})
-    if (keyphrase) {
-      onKeyphraseChange(null)
-    }
-    const context = PageController.getContext();
-    context.setPageUri(window.location.pathname)
-    PageController.setContext(context)
+const SearchResultsWidgetComponent = ({ initialProductsPerPage, initialSortType, initialSortDirection }) => {
+  const {
+    actions: {
+      onKeyphraseChange,
+      onResultsPerPageChange,
+      onPageNumberChange,
+      onSortChange,
+      onProductClick,
+      onDiscoverStyleOpen,
+      onFacetClick
+    },
+    context: {
+      page = 1,
+      keyphrase,
+      productsPerPage = initialProductsPerPage,
+      sortType = initialSortType,
+      sortDirection = initialSortDirection,
+    },
+    queryResult: {
+      isError,
+      isLoading,
+      isFetching,
+      data: {
+        sort: { choices: sortChoices = [] } = {},
+        total_item: totalItems,
+        total_page: totalPages = 0,
+        facet: facets = [],
+        facet_names: facetNames = [],
+        content: { product: { value: products = [] } = {} } = {},
+      } = {},
+    },
+    query,
+  } = useSearchResults((query) => {
+    query.getRequest().setContextBrowserDevice('mobile');
+    return {
+      productsPerPage: initialProductsPerPage,
+      sortType: initialSortType,
+      sortDirection: initialSortDirection,
+    };
+  });
+
+  if (isError) {
+    return <div>Response error</div>;
   }
-  useEffect(() => {
-    return () => {
-      reset();
-    }
-  }, []);
+  // const reset = () => {
+  //   onClearFilters();
+  //   onPageNumberChange({page: 1})
+  //   if (keyphrase) {
+  //     onKeyphraseChange(null)
+  //   }
+  //   const context = PageController.getContext();
+  //   context.setPageUri(window.location.pathname)
+  //   PageController.setContext(context)
+  // }
+  // useEffect(() => {
+  //   return () => {
+  //     reset();
+  //   }
+  // }, []);
 
   const handlePageClick = (e) => {
     const page = e.selected + 1;
     onPageNumberChange({ page })
   }
   const handleOnFacetClick = (payload) => {
-    onFacetClick(payload)
-    trackFullPageSearchFacetClickEvent('crm-search', payload.facetType, payload.facetValue, payload.facetValueIndex, payload.facetIndex);
+    debugger
+    onFacetClick({genders: {value: ["female"]}})
+    // trackFullPageSearchFacetClickEvent('crm-search', payload.facetType, payload.facetValue, payload.facetValueIndex, payload.facetIndex);
   }
   
   const navigate = useNavigate();
@@ -69,22 +88,24 @@ const RfkSearchResults = ({
 
   return (
     <Container style={{marginTop: '1rem'}}>
-      <Widget rfkId="crm-plp-seo"/>
-      {!loading && products.length ? (
+      {!isLoading && products?.length > 0 ? (
         <Grid container spacing={3}>
           {/* Facets */}
           <Grid item xs={4}>
             <FacetList
+              list={facetNames}
               facets={facets}
-              onFacetClick={handleOnFacetClick}
-              onClear={onClearFilters}
+              // facets={facets}
+              // facetNames={facetNames}
+              // onFacetClick={handleOnFacetClick}
+              // onClear={onClearFilters}
             />
           </Grid>
           {/* Products + Filters */}
           <Grid item xs={8}>
             <Grid container>
             <Grid item xs={9}>
-              {!loading && totalPages > 0 ? (
+              {!isLoading && totalPages > 0 ? (
                 <div>
                   <span>
                     {(page * productsPerPage) - productsPerPage + 1} - {(page * productsPerPage) > totalItems ? totalItems : (page * productsPerPage)} of {totalItems} results
@@ -103,23 +124,21 @@ const RfkSearchResults = ({
                   totalPages={totalPages}
                   sortChoices={sortChoices}
                   onPerPageChange={(numProducts) => {
-                    dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
-                      numProducts: Number(numProducts),
-                    });
+                    // dispatch(SearchResultsActions.RESULTS_PER_PAGE_CHANGED, {
+                    //   numProducts: Number(numProducts),
+                    // });
                   }}
-                  onPageNumberChange={(page) => onPageNumberChange({ page })}
-                  onSortChange={(payload) => {
-                    onSortChange(payload);
-                  }}
-                  onSearchChange={onKeyphraseChange}
+                  onPageNumberChange={(page) => console.log({ page })}
+                  onSortChange={onSortChange}
+                  onSearchChange={() => console.log('onKeyphraseChange')}
                 />
               </Grid>
             </Grid>
             {keyphrase ? <h3>Top Results for: {keyphrase} </h3> : null}
             <ProductList
               products={products}
-              loaded={loaded}
-              loading={loading}
+              loaded={!isLoading}
+              loading={isLoading}
               onProductClick={routeToPDP}
             />
           </Grid>
@@ -137,10 +156,10 @@ const RfkSearchResults = ({
         </Grid>
       ) 
       : 
-      (<div> {loading ? "Loading ..." : "No products found"} </div>)
+      (<div> {isLoading ? "Loading ..." : "No products found"} </div>)
       }
     </Container>
   );
 };
 
-export default RfkSearchResults;
+export default widget(SearchResultsWidgetComponent, WidgetDataType.SEARCH_RESULTS);

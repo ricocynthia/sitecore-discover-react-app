@@ -24,6 +24,7 @@ const PLPFilters = ({
       sortType: sort[0],
       sortDirection: sort[1]
     }
+    console.log(payload)
       onSortChange(payload);
   }
 

@@ -105,7 +105,7 @@ const NavBar = (props) => {
           </div>
         </Toolbar>
         {/* <Widget rfkId="crm-html-block-widget" /> */}
-        <Widget rfkId='crm-preview-search'/>
+        {/* <RfkPreviewSearch rfkId='crm-preview-search' /> */}
       </AppBar>
       <Toolbar />
     </React.Fragment>

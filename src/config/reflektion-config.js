@@ -6,7 +6,6 @@ import {
   setWidgetType,
   WidgetDataType,
 } from "@sitecore-discover/react";
-import RfkRecommendation from "../rfk-widget-components/rfk-recommendation";
 import RfkBanner from "../rfk-widget-components/rfk-banner-component";
 import RfkSeoComponent from "../rfk-widget-components/rfk-seo-component";
 import RfkHeroMessage from "../rfk-widget-components/html-blocks/hero-message-component";
@@ -63,55 +62,55 @@ setWidget("sdk-demo-homepage-banner", { type: WidgetDataType.BANNER });
 setWidget("crm-similar-products", rfkRecommendationConfig);
 
 // Search Results logic
-let rfkSearchResultsConfig = {
-  type: WidgetDataType.SEARCH_RESULTS,
-  component: RfkSearchResults,
-  global: true,
-  option: {
-    properties: {
-      initial: {
-        n_item: 12
-      },
-    },
-  }
-};
-if (window.location.search) {
-  const qparams = {};
-  const params = location.search.slice(1).split("&");
-  // let qparams = [];
-  params.forEach((p) => {
-    if (p) {
-      // page, keyphrase, and sort
-      switch (p.split("=")[0]) {
-        case "keyphrase":
-        case "page":
-          qparams[p === "page" ? "page" : "keyphrase"] = p.split("=")[1];
-          break;
-        case "sortBy":
-          qparams["sort"] = {
-            type: p.split("=")[1].split("-")[0],
-            order: p.split("=")[1].split("-")[1],
-          };
-          break;
-        default:
-          break;
-      }
-    }
-  });
-  const searchTerm = location.search.split("=")[1];
-  const options = {
-    properties: {
-      initial: {
-        keyphrase: searchTerm
-      },
-    },
-  };
-  rfkSearchResultsConfig = {
-    ...rfkSearchResultsConfig,
-    options,
-  };
-}
-setWidget("crm-search", rfkSearchResultsConfig);
+// let rfkSearchResultsConfig = {
+//   type: WidgetDataType.SEARCH_RESULTS,
+//   component: RfkSearchResults,
+//   global: true,
+//   option: {
+//     properties: {
+//       initial: {
+//         n_item: 12
+//       },
+//     },
+//   }
+// };
+// if (window.location.search) {
+//   const qparams = {};
+//   const params = location.search.slice(1).split("&");
+//   // let qparams = [];
+//   params.forEach((p) => {
+//     if (p) {
+//       // page, keyphrase, and sort
+//       switch (p.split("=")[0]) {
+//         case "keyphrase":
+//         case "page":
+//           qparams[p === "page" ? "page" : "keyphrase"] = p.split("=")[1];
+//           break;
+//         case "sortBy":
+//           qparams["sort"] = {
+//             type: p.split("=")[1].split("-")[0],
+//             order: p.split("=")[1].split("-")[1],
+//           };
+//           break;
+//         default:
+//           break;
+//       }
+//     }
+//   });
+//   const searchTerm = location.search.split("=")[1];
+//   const options = {
+//     properties: {
+//       initial: {
+//         keyphrase: searchTerm
+//       },
+//     },
+//   };
+//   rfkSearchResultsConfig = {
+//     ...rfkSearchResultsConfig,
+//     options,
+//   };
+// }
+// setWidget("crm-search", rfkSearchResultsConfig);
 
 setCredentials({
   env: process.env.REACT_APP_ENVIRONMENT,
